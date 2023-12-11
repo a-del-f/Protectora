@@ -13,19 +13,19 @@
 
 <?php
 
-if(isset($i)){
+if(isset($_POST["btn"])){
     
 
  
 
     
 
-        if($_POST["accion"]="ver"){
-        header("location:ver.php");}
-        if($_POST["accion"]="añadir"){
-        header("location:añadir.php");}
-        if($_POST["accion"]="editar"){
-        header("location:editar.php");}
+        if($_POST["tipo"]="usuario"){
+        header("location:usuario_vista.php");}
+        if($_POST["tipo"]="animal"){
+        header("location:animal_vista.php");}
+        if($_POST["tipo"]="adopcion"){
+        header("location:adopcion_vista.php");}
 
 
     
@@ -36,6 +36,7 @@ if(isset($i)){
         <select name="tipo" id="tipo_id">
             <option value="usuario">Usario</option>
             <option value="animal">Animal</option>
+            <option value="adopcion">Adopción</option>
         </select>
 
         <input type="radio" name="accion" id="acccion_id" value="ver">
@@ -44,6 +45,7 @@ if(isset($i)){
         <label>añadir</label>
         <input type="radio" name="accion" id="accion" value="editar">
         <label>editar</label>
+        <input type="submit" name="btn" id="btn_id" >
 
     </form>
 </body>
