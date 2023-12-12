@@ -32,7 +32,7 @@ if(isset($_POST["btn"])){
 }
 ?>
 <!--$id,$nombre,$apellido,$sexo,$direccion,$telefono,$edad-->
-    <form action="vista_usuario.php" method="post">
+    <form action="index.php" method="post">
         <select name="tipo" id="tipo_id">
             <option value="usuario">Usario</option>
             <option value="animal">Animal</option>
