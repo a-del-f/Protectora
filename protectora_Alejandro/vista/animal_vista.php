@@ -112,5 +112,34 @@ if($_POST["accion"]=="editar"){
 <input type="hidden" name="tabla" id="tabla_id"value="<?php echo $name ?>">
 <input type="submit" name="btne" id="btne_id" >
 
+
 </form></div> <?php 
-}
+
+    try{
+        if (isset($_POST["btna"])) {
+        $valores="";
+        $animal="";
+           for($n=0;$n<($_POST["longitud"]);$n++){
+            
+        
+               
+        
+                $valores=$valores.""."'".$_POST["value".$n]."'";
+                $atributos=$animal.$_POST["value".$n];
+                if($n!=(($_POST["longitud"])-1)){
+                    $valores=$valores.",";
+                    $animal=$animal.",";
+                }
+                
+           }
+           
+           $array=explode(",",$atributos);
+           echo count($array);
+        //   $animal=new Animal($array);
+
+
+}}catch(PDOException $e){
+    //recojo error
+   
+}}
+?>
