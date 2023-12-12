@@ -1,5 +1,12 @@
 <?php
-if($_POST["accion"]=="añadir"){
+require_once("../modelo/conexion.php");
+// function __construct($user, $servername, $dbname, $password)
+//$conn = new PDO("mysql:host=$servername; dbname=pufosa", $username, $password);
+$conexion=new Conexion("127.0.0.1",3333,"protectora_animales","root","");
+$conn=$conexion->conectar();
+
+if($_REQUEST["accion"]=="añadir"){
+    
     $sql = "SELECT lower(COLUMN_name) FROM INFORMATION_SCHEMA.COLUMNS where table_name='". $name ."';";
     $stmt = $conn->query($sql);
 
@@ -67,21 +74,27 @@ $animal="";
    
 }
 }
-if ($_POST["accion"]=="ver") {
+if ($_REQUEST["accion"]=="ver") {
 //        public function __construct($tabla,  $user, $servername, $dbname, $password)
 
-    $cone=new Conexion("animal","localhost:3333","","protectora_animales");
-   $generica= new Animal(0,0,0,0,0,0,0,0,$cone );
+    $conee=new Conexion("localhost",3333,"protectora_animales","root","");
+   $generica= new Animal(0,0,0,0,0,0,0,0,$conee);
    $generica->obtieneTodos();
    
 }
-if($_POST["accion"]=="editar"){
-    ?><div>
+if($_REQUEST["accion"]=="editar"){
+   
+    $sql2 = "SELECT lower(COLUMN_name) FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
+    $stmt2 = $conn->prepare($sql2);
+    $stmt2->bindParam(":tabla", $name);
+    $stmt2->execute();
+   ?><div>
     <!--formulario para determinar que añadir -->
+    
 <form action="animal.php" method="post">
 <label >Indica la id del animal que desees modificar</label>
 <input type="text" name="localizador" id="localizador_id">
-<?php $i=0;  while ($row = $stmt->fetch(PDO::FETCH_COLUMN)) {
+<?php $i=0;  while ($row = $stmt2->fetch(PDO::FETCH_COLUMN)) {
     $array[$i] = $row;
 ?>
 

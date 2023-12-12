@@ -14,19 +14,22 @@ class Conexion
     private $servername;
     private $dbname;
     private $password;
+    private $port;
 
-    function __construct($user, $servername, $dbname, $password)
+
+    function __construct( $servername,$port, $dbname,$user, $password)
     {
         $this->user = $user;
         $this->servername = $servername;
         $this->dbname = $dbname;
+        $this->port=$port;
         $this->password = $password;
     }
 
     function conectar()
     {
-
-        $conn = new PDO("mysql:host= $this->servername; dbname=$this->dbname", $this->user, $this->password);
+        $dsn = "mysql:host={$this->servername};port={$this->port};dbname={$this->dbname};charset=utf8";
+            $conn= new PDO($dsn, $this->user, $this->password);
         return $conn;
     }
 }

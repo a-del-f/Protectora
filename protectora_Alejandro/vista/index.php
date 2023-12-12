@@ -21,11 +21,11 @@ if(isset($_POST["btn"])){
     
 
         if($_POST["tipo"]=="usuario"){
-        header("location:usuario_vista.php");}
+        header("location:usuario_vista.php?accion=".$_POST["accion"]);}
         if($_POST["tipo"]=="animal"){
-        header("location:animal_vista.php");}
+        header("location:animal_vista.php?accion=".$_POST["accion"]);}
         if($_POST["tipo"]=="adopcion"){
-        header("location:adopcion_vista.php");}
+        header("location:adopcion_vista.php?accion=".$_POST["accion"]);}
 
 
     
