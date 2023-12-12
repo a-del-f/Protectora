@@ -46,7 +46,7 @@ class Animal extends Crud{
             }
         }
     
-        $sql="Select * from $this->tabla ";
+        $sql="Update $value from $this->tabla ";
         $stmt=$this->conn->prepare($sql);
         $stmt->execute();
         

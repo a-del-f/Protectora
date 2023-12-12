@@ -1,19 +1,20 @@
 <?php
-
+require_once("conexion.php");
 abstract class Crud extends Conexion
 {
     private $tabla;
     private $conn;
-    public function __construct($tabla,  $user, $servername, $dbname, $password)
+    public function __construct($tabla,  $user, $servername, $dbname, $password,Conexion $conn)
     {
-        parent::__construct($user, $servername, $dbname, $password);
+        parent::__construct($user, $servername, $dbname, $password, $conn);
         $this->tabla = $tabla;
-        $this->conn = $this->conectar();
+        $this->conn=$conn;
     }
     public function obtieneTodos()
     {
         $sql="Select *from $this->tabla";
-        $stmt=$this->conn ->query($sql);
+        $cone=$this->conn->conectar();
+        $stmt=$cone ->query($sql);
         $r=0;
         while($row=$stmt->fetch(PDO::FETCH_NUM)){
 
@@ -26,11 +27,13 @@ abstract class Crud extends Conexion
   
 
   function obtieneDeId($id){
+    $sql="Select *from $this->tabla";
+        $cone=$this->conn->conectar();
         $array=array();
       $array=  $this->obtieneTodos();
 
         $sql2="SELECT COLUMN_name FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
-        $stmt2=$this->conn->prepare($sql2);
+        $stmt2=$cone->prepare($sql2);
         $stmt2->bindParam(":tabla",$this->tabla);
         $stmt2->execute();
         $i=0;
