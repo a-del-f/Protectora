@@ -5,7 +5,7 @@ if($_POST["accion"]=="añadir"){
 
 ?><div>
     <!--formulario para determinar que añadir -->
-<form action="añadir.php" method="post">
+<form action="animal.php" method="post">
 <?php $i=0;  while ($row = $stmt->fetch(PDO::FETCH_COLUMN)) {
     $array[$i] = $row;
 ?>
@@ -76,5 +76,41 @@ if ($_POST["accion"]=="ver") {
    
 }
 if($_POST["accion"]=="editar"){
+    ?><div>
+    <!--formulario para determinar que añadir -->
+<form action="animal.php" method="post">
+<label >Indica la id del animal que desees modificar</label>
+<input type="text" name="localizador" id="localizador_id">
+<?php $i=0;  while ($row = $stmt->fetch(PDO::FETCH_COLUMN)) {
+    $array[$i] = $row;
+?>
+
+<label ><?php echo "Introduce " . $row; ?></label>
+
+<?php
+        $control= strpos($row, 'id');
+  if( $control===false) 
+{ ?>
+               <input type="text" name="<?php echo "value" . "$i" ?>" id="<?php echo "$row" . "_id" ?>">
+               <br>
+<?php } else if($control!==false) {
+        if($i==0){
+            ?>
+                    <input type="numeric" name="<?php echo "value" . "$i" ?>" id="<?php echo "texto" . "_id"  ?>">
+                    <br>
+            <?php
+
+        }
+
+         
+         
+            ?><br> 
     
+   
+<?php }$i++; } ?>
+<input type="hidden" name="longitud" id="longitud_id" value="<?php echo $i++ ?>">
+<input type="hidden" name="tabla" id="tabla_id"value="<?php echo $name ?>">
+<input type="submit" name="btne" id="btne_id" >
+
+</form></div> <?php 
 }
