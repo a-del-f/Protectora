@@ -3,14 +3,13 @@ require_once("conexion.php");
 abstract class Crud extends Conexion
 {
     private $tabla;
-    private $conn;
-    public function __construct($tabla,  $user, $servername, $dbname, $password,Conexion $conn)
+    private Conexion $conn;
+    public function __construct($tabla, Conexion $conn)
     {
-        parent::__construct($user, $servername, $dbname, $password, $conn);
         $this->tabla = $tabla;
         $this->conn=$conn;
     }
-    public function obtieneTodos()
+    public  function obtieneTodos()
     {
         $sql="Select *from $this->tabla";
         $cone=$this->conn->conectar();

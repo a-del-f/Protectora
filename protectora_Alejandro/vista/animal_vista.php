@@ -91,7 +91,7 @@ if ($_REQUEST["accion"]=="ver") {
 //        public function __construct($tabla,  $user, $servername, $dbname, $password)
     session_start();
     $_SESSION["accion"]="ver";
-    header("location:../controlador/animal_controlador");
+    header("location:../controlador/animal_controlador.php");
 
    
 }

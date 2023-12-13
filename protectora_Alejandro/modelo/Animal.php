@@ -1,23 +1,28 @@
 <?php
+require_once("conexion.php");
+require_once("crud.php");
 class Animal extends Crud{
     private $id;
-    private $idAnimal;
-    private $idUsuario;
+    private $nombre;
+    private $especie;
     private $fecha;
     private $raza;
     private $genero;
     private $color;
     private $edad;
 
-    private $conn;
+  
     private const TABLA="usuarios";
-    function __construct($id,$idAnimal,$idUsuario,$fecha,$raza,$genero,$color,$edad,Conexion $conexion){
+    function __construct($tabla,$id,$nombre,$especie,$raza,$genero,$color,$edad,Conexion $conexion){
+
+        parent::__construct($tabla,$conexion);
         $this->id=$id;
-        $this->idAnimal=$idAnimal;
-        $this->idUsuario=$idUsuario;
-        $this->fecha=$fecha;
+        $this->nombre=$nombre;
+        $this->especie=$especie;
         $this->raza=$raza;
-        $this->conn=$conexion->conectar();
+        $this->genero=$genero;
+        $this->color=$color;
+        $this->edad=$edad;
 
     }
     function __get($name){
@@ -28,10 +33,26 @@ class Animal extends Crud{
     function __set($name, $value){
         $this->$name=$value;
     }
-    function crear(){} 
+    function crear(){
+        try{
+        $cone= $this->cone->conectar();
+        $sql="insert into $this->tabla values(:valores)";
+        $stmt=$cone->prepare($sql);
+        $valor=$this->id.",".$this->nombre.",".$this->especie.",".$this->raza.",".$this->genero.",".$this->color.",".$this->edad;
+        $stmt->bindParam(":valores",$valor);
+        $stmt->execute();
+        ?><button onclick="<?php header("location:../vista/index.php")  ?>" >Volver</button><?php
+
+        echo "cambios realizados";}catch(PDOException){
+            echo "no se han realizado los cambios"
+            ?><button onclick="<?php header("location:../vista/index.php")  ?>" >Volver</button><?php
+        }
+    } 
     function actualizar(){    $value="";
         $sql2="SELECT COLUMN_name FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
-        $stmt2=$this ->conn->prepare($sql2);
+       $cone= $this->cone->conectar();
+        $stmt2=$cone->prepare($sql2);
+
         //introduzco variables
         $stmt2->bindParam(":tabla",$this->tabla);
         $stmt2->execute();
@@ -47,7 +68,7 @@ class Animal extends Crud{
         }
     
         $sql="Update $value from $this->tabla ";
-        $stmt=$this->conn->prepare($sql);
+        $stmt=$cone->prepare($sql);
         $stmt->execute();
         
         $row2=$stmt->fetchAll(PDO::FETCH_NUM);}
