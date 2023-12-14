@@ -1,117 +1,132 @@
-<?php
-require_once("../modelo/conexion.php");
-require_once("../modelo/crud.php");
+<!DOCTYPE html>
+<html lang="en">
 
-require_once("../modelo/animal.php");
-
-// function __construct($user, $servername, $dbname, $password)
-//$conn = new PDO("mysql:host=$servername; dbname=pufosa", $username, $password);
-$conexion=new Conexion("127.0.0.1",3333,"protectora_animales","root","");
-$conn=$conexion->conectar();
-
-
-
-
-try{
-    if (isset($_POST["btna"])) {
-    $valores="";
-    $animal="";
-       for($n=0;$n<($_POST["longitud"]);$n++){
-        
-    
-           
-    
-            $valores=$valores.""."'".$_POST["value".$n]."'";
-            $animal=$animal.$_POST["value".$n];
-            if($n!=(($_POST["longitud"])-1)){
-                $valores=$valores.",";
-                $animal=$animal.",";
-            }
-            
-       }
-    
-        $sql2 = "Insert into " . $_POST["tabla"] . " values($valores)";
-        $stmt = $conn->prepare($sql2);
-        echo $valores;
-        $stmt->execute();
-    }}catch(PDOException){
-        //recojo error
-       
-    }
-
-if($_REQUEST["accion"]=="añadir"){
-    
-    $sql = "SELECT lower(COLUMN_name) FROM INFORMATION_SCHEMA.COLUMNS where table_name='animal';";
-    $stmt = $conn->query($sql);
-
-?><div>
-    <!--formulario para determinar que añadir -->
-<form action="../controlador/animal_controlador.php" method="post">
-   
-<?php
- session_start();
- $_SESSION["accion"]="añadir";
-$i=0;  while ($row = $stmt->fetch(PDO::FETCH_COLUMN)) {
-    $array[$i] = $row;
-?>
-
-<label ><?php echo "Introduce " . $row; ?></label>
-
-<?php
-        $control= strpos($row, 'id');
-  if( $control===false) 
-{ ?>
-               <input type="text" name="<?php echo "value" . "$i" ?>" id="<?php echo "$row" . "_id" ?>">
-               <br>
-<?php } else if($control!==false) {
-        if($i==0){
-            ?>
-                    <input type="numeric" name="<?php echo "value" . "$i" ?>" id="<?php echo "texto" . "_id"  ?>">
-                    <br>
-            <?php
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style/style.css">
+    <script>
+        function goBack() {
+            window.history.back();
         }
+        function goToIndex() {
+            window.location.href = '../index.php';
+        }
+    </script>
+    <title>Gestion de Animales</title>
+</head>
 
-         
-         
-            ?><br> 
-    
-   
-<?php }$i++; } ?>
-<input type="hidden" name="longitud" id="longitud_id" value="<?php echo $i++ ?>">
-<input type="hidden" name="tabla" id="tabla_id"value="<?php echo $name ?>">
-<input type="submit" name="btna" id="btna_id" >
+<body>
+    <?php if (isset($_GET['action']) && $_GET['action'] == 'listarAnimal'): ?>
+        <button onclick="goToIndex()">TABLAS</button>
+        <h1>Gestion de Animales</h1>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Especie</th>
+                <th>Raza</th>
+                <th>Género</th>
+                <th>Color</th>
+                <th>Edad</th>
+                <th>Editar</th>
+                <th>Borrar</th>
+            </tr>
+            <?php foreach ($animales as $animal): ?>
+                <tr>
+                    <td>
+                        <?php echo $animal->id; ?>
+                    </td>
+                    <td>
+                        <?php echo $animal->nombre; ?>
+                    </td>
+                    <td>
+                        <?php echo $animal->especie; ?>
+                    </td>
+                    <td>
+                        <?php echo $animal->raza; ?>
+                    </td>
+                    <td>
+                        <?php echo $animal->genero; ?>
+                    </td>
+                    <td>
+                        <?php echo $animal->color; ?>
+                    </td>
+                    <td>
+                        <?php echo $animal->edad; ?>
+                    </td>
+                    <td>
+                        <a
+                            href="../controlador/Animal_Controlador.php?action=editarAnimal&id=<?php echo $animal->id; ?>">Editar</a>
+                    </td>
+                    <td>
+                        <a
+                            href="../controlador/Animal_Controlador.php?action=borrarAnimal&id=<?php echo $animal->id; ?>">Borrar</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <a href="../controlador/Animal_Controlador.php?action=crearAnimal">Agregar nuevo animal</a>
+    <?php endif; ?>
+    <?php if (isset($_GET['action']) && $_GET['action'] == 'crearAnimal'): ?>
+        <button onclick="goBack()">VOLVER</button>
+        <h1>Creador Animales</h1>
+        <form method="post" action="">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" required><br>
 
-</form></div>
+            <label for="especie">Especie:</label>
+            <input type="text" name="especie" required><br>
 
-<?php 
+            <label for="raza">Raza:</label>
+            <input type="text" name="raza" required><br>
 
-}
-if ($_REQUEST["accion"]=="ver") {
-//        public function __construct($tabla,  $user, $servername, $dbname, $password)
-    session_start();
-    $_SESSION["accion"]="ver";
-    header("location:../controlador/animal_controlador.php");
+            <label for="genero">Género:</label>
+            <select name="genero" required>
+                <option value="Hembra">Hembra</option>
+                <option value="Macho">Macho</option>
+            </select><br>
 
-   
-}
-if($_REQUEST["accion"]=="editar"){
-   
-  
-    $_SESSION["accion"]="editar"
-   ?><div>
-    <!--formulario para determinar que añadir -->
-    
-<form action="../controlador/animal_controlador.php" method="post">
-<label >Indica la id del animal que desees modificar</label>
-<input type="text" name="localizador" id="localizador_id">
+            <label for="color">Color:</label>
+            <input type="text" name="color" required><br>
 
-<input type="hidden" name="longitud" id="longitud_id" value="<?php echo $i++ ?>">
-<input type="hidden" name="accion" id="accion_id"value="<?php echo "editar" ?>">
-<input type="submit" name="btne" id="btne_id" >
+            <label for="edad">Edad:</label>
+            <input min="0" type="number" name="edad" required><br>
+
+            <input type="submit" value="Crear Animal">
+        </form>
+    <?php endif; ?>
+    <?php if (isset($_GET['action']) && $_GET['action'] == 'editarAnimal'): ?>
+        <button onclick="goBack()">VOLVER</button>
+        <h1>Editor de Animales</h1>
+        <form method="post" action="">
+            <input type="hidden" name="id" value="<?php echo $animal->id ?>" required><br>
+
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" value="<?php echo $animal->nombre ?>" required><br>
+
+            <label for="especie">Especie:</label>
+            <input type="text" name="especie" value="<?php echo $animal->especie ?>" required><br>
+
+            <label for="raza">Raza:</label>
+            <input type="text" name="raza" value="<?php echo $animal->raza ?>" required><br>
+
+            <label for="genero">Género:</label>
+            <select name="genero" required>
+                <option value="Hembra" <?php echo ($animal->genero == 'Hembra') ? 'selected' : ''; ?>>Hembra</option>
+                <option value="Macho" <?php echo ($animal->genero == 'Macho') ? 'selected' : ''; ?>>Macho</option>
+            </select><br>
 
 
-</form></div> <?php 
+            <label for="color">Color:</label>
+            <input type="text" name="color" value="<?php echo $animal->color ?>" required><br>
 
-    }
-?>
+            <label for="edad">Edad:</label>
+            <input min="0" type="number" name="edad" value="<?php echo $animal->edad ?>" required><br>
+
+            <input type="submit" value="Editar Animal">
+        </form>
+    <?php endif; ?>
+</body>
+
+</html>

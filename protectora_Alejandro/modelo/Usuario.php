@@ -1,75 +1,103 @@
-
 <?php
-Class Usuario extends Crud{
+require_once("crud.php");
+class Usuario extends Crud
+{
+    private $id;
+    private $nombre;
+    private $apellido;
+    private $sexo;
+    private $direccion;
+    private $telefono;
+    private $conexion;
 
-private $id;
-private $nombre;
-private $apellido;
-private $sexo;
-private $direccion;
- private $telefono;
- private $edad ;
- private $conexion;
-/*
-function  __construct($id,$nombre,$apellido,$sexo,$direccion,$telefono,$edad,$conexion,$tabla, $user, $servername, $dbname, $password){
-    parent::__construct($tabla, $user, $servername, $dbname, $password);
-    $this->id=$id;
-    $this->nombre=$nombre;
-    $this->apellido->$apellido;
-    $this->sexo=$sexo;
-    $this->direccion= $direccion;
-    $this->telefono=$telefono;
-    $this->edad=$edad;
-    $this->conexion = $this->conectar();
+    protected const TABLA = "usuarios";
 
-}*/
-
-function  __construct($id,$nombre,$apellido,$sexo,$direccion,$telefono,$edad,Conexion $conn){
-    $this->id=$id;
-    $this->nombre=$nombre;
-    $this->apellido->$apellido;
-    $this->sexo=$sexo;
-    $this->direccion= $direccion;
-    $this->telefono=$telefono;
-    $this->edad=$edad;
-    $this->conexion = $conn->conectar();
-
-}
-function __set($name,$valor){
-$this->$name=$valor;
-}  
-function __get($name){
-return $this->$name;
-}
-
-function crear($array=[]){
-
-}
-function actualizar($id){
-    $value="";
-    $sql2="SELECT COLUMN_name FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
-    $stmt2=$this ->conn->prepare($sql2);
-    //introduzco variables
-    $stmt2->bindParam(":tabla",$this->tabla);
-    $stmt2->execute();
-
-    $row=$stmt2->fetchAll(PDO::FETCH_COLUMN);
-        
-    $array=array_map( 'objectToArray', (array) $this );
-    for($i=0;$i<count($array );$i++){
-        $value=$value+$row[$i]+"="+$array[$i];
-        if($i!=count($array )-1){
-            $value=$value+" , ";
+    public function __construct($conexion)
+    {
+        parent::__construct(Usuario::TABLA, $conexion);
+        $this->conexion = $conexion;
+    }
+    public function __set($property, $value)
+    {
+        if (property_exists($this, $property)) {
+            $this->$property = $value;
+        }
+    }
+    public function __get($property)
+    {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+    }
+    public function crear()
+    {
+        try {
+            $tabla = Usuario::TABLA;
+            $sql = "INSERT INTO $tabla (nombre, apellido, sexo, direccion, telefono) VALUES (:nombre, :apellido, :sexo, :direccion, :telefono)";
+            $stmt = $this->conexion->conectar()->prepare($sql);
+            $stmt->bindParam(':nombre', $this->nombre);
+            $stmt->bindParam(':apellido', $this->apellido);
+            $stmt->bindParam(':sexo', $this->sexo);
+            $stmt->bindParam(':direccion', $this->direccion);
+            $stmt->bindParam(':telefono', $this->telefono);
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
         }
     }
 
-    $sql="Update $value from $this->tabla where :id ";
-    $stmt=$this->conn->prepare($sql);
-    $stmt->bindParam(":id",$row[0]=$id);
-    $stmt->execute();
-    
-    $row2=$stmt->fetchAll(PDO::FETCH_NUM);
-    
-}
-}
+    public function actualizar()
+    {
+        try {
+            $tabla = Usuario::TABLA;
+            $stmt2 = $this->conexion->conectar()->prepare("SELECT id FROM $tabla WHERE nombre = :nombre AND apellido = :apellido");
+            $stmt2->bindParam(':nombre', $this->nombre);
+            $stmt2->bindParam(':apellido', $this->apellido);
+            $stmt2->execute();
+            $resultado = $stmt2->fetch(PDO::FETCH_ASSOC);
 
+            if ($resultado) {
+                $sql = "UPDATE $tabla SET ";
+                $params = array();
+                if ($this->nombre !== null) {
+                    $sql .= "nombre = :nombre, ";
+                    $params[':nombre'] = $this->nombre;
+                }
+                if ($this->apellido !== null) {
+                    $sql .= "apellido = :apellido, ";
+                    $params[':apellido'] = $this->apellido;
+                }
+                if ($this->sexo !== null) {
+                    $sql .= "sexo = :sexo, ";
+                    $params[':sexo'] = $this->sexo;
+                }
+                if ($this->direccion !== null) {
+                    $sql .= "direccion = :direccion, ";
+                    $params[':direccion'] = $this->direccion;
+                }
+                if ($this->telefono !== null) {
+                    $sql .= "telefono = :telefono, ";
+                    $params[':telefono'] = $this->telefono;
+                }
+                if (!empty($params)) {
+                    $sql = rtrim($sql, ', ');
+                    $sql .= " WHERE id = :id";
+                    $params[':id'] = $resultado['id'];
+
+                    $stmt = $this->conexion->conectar()->prepare($sql);
+                    $stmt->execute($params);
+
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+} ?>

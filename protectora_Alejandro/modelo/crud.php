@@ -1,69 +1,77 @@
 <?php
-require_once("conexion.php");
 abstract class Crud extends Conexion
 {
-    private $tabla;
-    private Conexion $conn;
-    public function __construct($tabla, Conexion $conn)
+    protected $tabla;
+    private $conexion;
+
+    public function __construct($tabla, $conexion)
     {
         $this->tabla = $tabla;
-        $this->conn=$conn;
+        $this->conexion = $conexion;
     }
-    public  function obtieneTodos()
+
+    public function obtenerTodos()
     {
-        $sql="Select *from $this->tabla";
-        $cone=$this->conn->conectar();
-        $stmt=$cone ->query($sql);
-        $r=0;
-        while($row=$stmt->fetch(PDO::FETCH_NUM)){
-
-            for($i=0;$i<count($row);$i++){
-            $array[$r][$i]= $row[$i];}
-            $r++;
+        $stmt = $this->conexion->conectar()->prepare("SELECT * FROM $this->tabla");
+        $stmt->execute();
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $objetos = array();
+        foreach ($resultados as $fila) {
+            if ($this->tabla === "usuarios") {
+                $nombreClase = "Usuario";
+            } else {
+                $nombreClase = ucfirst($this->tabla);
+            }
+            $objeto = new $nombreClase($this->tabla, $this->conexion);
+            foreach ($fila as $columna => $valor) {
+                $objeto->{$columna} = $valor;
+            }
+            $objetos[] = $objeto;
         }
-            return $array;
+        return $objetos;
+    }
+
+
+    public function obtenerDeID($id)
+    {
+        $stmt = $this->conexion->conectar()->prepare("SELECT * FROM $this->tabla WHERE id = :id");
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($fila) {
+            $nombreClase = $this->tabla;
+            $objeto = new $nombreClase($this->tabla, $this->conexion);
+            foreach ($fila as $columna => $valor) {
+                $objeto->{$columna} = $valor;
+            }
+
+            return $objeto;
+        } else {
+            return null;
         }
-  
+    }
 
-  function obtieneDeId($id){
-    $sql="Select *from $this->tabla";
-        $cone=$this->conn->conectar();
-        $array=array();
-      $array=  $this->obtieneTodos();
 
-        $sql2="SELECT COLUMN_name FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
-        $stmt2=$cone->prepare($sql2);
-        $stmt2->bindParam(":tabla",$this->tabla);
+    public function borrar($id)
+    {
+        $stmt2 = $this->conexion->conectar()->prepare("SELECT * FROM $this->tabla WHERE id = :id");
+        $stmt2->bindParam(':id', $id);
         $stmt2->execute();
-        $i=0;
-        while($row2=$stmt2->fetch(PDO::FETCH_NUM)){
-            $nombre[$i]=$row2[$i];
-            $i++;
-     
-            for($i=0;count($array);$i++){
-                if($array[$i][0]==$id){
-                    return $array[$i][0];
-                }
-            }
+        if ($stmt2->rowCount() > 0) {
+            $stmt = $this->conexion->conectar()->prepare("DELETE FROM $this->tabla WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return true;
+        } else {
+            return false;
+        }
+
 
     }
-}
-function borrar($id){
-    $array=array();
-    $array=$this->obtieneDeId($id);
-    for($r=0;$r<count($array);$r++){
-            if($array[$r][0]==$id){
-                $valor=$array[$r][0];
-                for($d=$r;$d<count($array);$d++){
-                
-                    $array[$d]=$array[$d+1];
-                }
-                unset($array[$r]);
-            }
-        
-    }
-}
 
-    } 
-    
+    abstract public function crear();
+    abstract public function actualizar();
+}
 ?>

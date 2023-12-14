@@ -1,75 +1,108 @@
 <?php
-require_once("conexion.php");
 require_once("crud.php");
-class Animal extends Crud{
+class Animal extends Crud
+{
     private $id;
     private $nombre;
     private $especie;
-    private $fecha;
     private $raza;
     private $genero;
     private $color;
     private $edad;
+    private $conexion;
 
-  
-    private const TABLA="usuarios";
-    function __construct($tabla,$id,$nombre,$especie,$raza,$genero,$color,$edad,Conexion $conexion){
+    protected const TABLA = "animal";
 
-        parent::__construct($tabla,$conexion);
-        $this->id=$id;
-        $this->nombre=$nombre;
-        $this->especie=$especie;
-        $this->raza=$raza;
-        $this->genero=$genero;
-        $this->color=$color;
-        $this->edad=$edad;
-
+    public function __construct($conexion)
+    {
+        parent::__construct(Animal::TABLA, $conexion);
+        $this->conexion = $conexion;
     }
-    function __get($name){
-        return $this->$name;
-
-    }
-
-    function __set($name, $value){
-        $this->$name=$value;
-    }
-    function crear(){
-        try{
-        $cone= $this->cone->conectar();
-        $sql="insert into $this->tabla values(:valores)";
-        $stmt=$cone->prepare($sql);
-        $valor=$this->id.",".$this->nombre.",".$this->especie.",".$this->raza.",".$this->genero.",".$this->color.",".$this->edad;
-        $stmt->bindParam(":valores",$valor);
-        $stmt->execute();
-        ?><button onclick="<?php header("location:../vista/index.php")  ?>" >Volver</button><?php
-
-        echo "cambios realizados";}catch(PDOException){
-            echo "no se han realizado los cambios"
-            ?><button onclick="<?php header("location:../vista/index.php")  ?>" >Volver</button><?php
+    public function __set($property, $value)
+    {
+        if (property_exists($this, $property)) {
+            $this->$property = $value;
         }
-    } 
-    function actualizar(){    $value="";
-        $sql2="SELECT COLUMN_name FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
-       $cone= $this->cone->conectar();
-        $stmt2=$cone->prepare($sql2);
+    }
+    public function __get($property)
+    {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+    }
+    public function crear()
+    {
+        try {
+            $tabla = Animal::TABLA;
+            $sql = "INSERT INTO $tabla (nombre, especie, raza, genero, color, edad) VALUES (:nombre, :especie, :raza, :genero, :color, :edad)";
+            $stmt = $this->conexion->conectar()->prepare($sql);
+            $stmt->bindParam(':nombre', $this->nombre);
+            $stmt->bindParam(':especie', $this->especie);
+            $stmt->bindParam(':raza', $this->raza);
+            $stmt->bindParam(':genero', $this->genero);
+            $stmt->bindParam(':color', $this->color);
+            $stmt->bindParam(':edad', $this->edad);
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 
-        //introduzco variables
-        $stmt2->bindParam(":tabla",$this->tabla);
-        $stmt2->execute();
-    
-        $row=$stmt2->fetchAll(PDO::FETCH_COLUMN);
-            
-        $array=array_map( 'objectToArray', (array) $this );
-        for($i=0;$i<count($array );$i++){
-            $value=$value+$row[$i]+"="+$array[$i];
-            if($i!=count($array )-1){
-                $value=$value+" , ";
+    public function actualizar()
+    {
+        try {
+            $tabla = Animal::TABLA;
+            $stmt2 = $this->conexion->conectar()->prepare("SELECT * FROM $tabla WHERE id = :id");
+            $stmt2->bindParam(':id', $this->id);
+            $stmt2->execute();
+            $resultado = $stmt2->fetch(PDO::FETCH_ASSOC);
+            if ($resultado) {
+                $sql = "UPDATE $tabla SET ";
+                $params = array();
+                if ($this->nombre !== null) {
+                    $sql .= "nombre = :nombre, ";
+                    $params[':nombre'] = $this->nombre;
+                }
+                if ($this->especie !== null) {
+                    $sql .= "especie = :especie, ";
+                    $params[':especie'] = $this->especie;
+                }
+                if ($this->raza !== null) {
+                    $sql .= "raza = :raza, ";
+                    $params[':raza'] = $this->raza;
+                }
+                if ($this->genero !== null) {
+                    $sql .= "genero = :genero, ";
+                    $params[':genero'] = $this->genero;
+                }
+                if ($this->color !== null) {
+                    $sql .= "color = :color, ";
+                    $params[':color'] = $this->color;
+                }
+                if ($this->edad !== null) {
+                    $sql .= "edad = :edad, ";
+                    $params[':edad'] = $this->edad;
+                }
+                if (!empty($params)) {
+                    $sql = rtrim($sql, ', ');
+                    $sql .= " WHERE id = :id";
+                    $params[':id'] = $resultado['id'];
+
+                    $stmt = $this->conexion->conectar()->prepare($sql);
+                    $stmt->execute($params);
+
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
             }
+
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
         }
-    
-        $sql="Update $value from $this->tabla ";
-        $stmt=$cone->prepare($sql);
-        $stmt->execute();
-        
-        $row2=$stmt->fetchAll(PDO::FETCH_NUM);}
-}
+    }
+} ?>

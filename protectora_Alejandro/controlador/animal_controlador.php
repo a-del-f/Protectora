@@ -1,102 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
 <?php
-require_once("../modelo/conexion.php");
-require_once("../modelo/Animal.php");
-require_once("../modelo/crud.php");
-$conexion = new Conexion("127.0.0.1", 3333, "protectora_animales", "root", "");
-$conn = $conexion->conectar();
-session_start();
+require_once("../core/conexion.php");
+require_once("../modelo/animal.php");
 
-if ($_SESSION["accion"] == "editar") {
-    $sql2 = "SELECT lower(COLUMN_name) FROM INFORMATION_SCHEMA.COLUMNS where table_name=:tabla;";
-    $stmt2 = $conn->prepare($sql2);
-    $stmt2->bindParam(":tabla", $name);
-    $stmt2->execute();
-    session_start();
-    ?>
-    <form action="">
-        <?php
-        $i = 0;
-        while ($row = $stmt2->fetch(PDO::FETCH_COLUMN)) {
-            $array[$i] = $row;
-        ?>
-            <label><?php echo "Introduce " . $row; ?></label>
+class AnimalController
+{
+    private $conexion;
 
-            <?php
-            $control = strpos($row, 'id');
-            if ($control === false) { ?>
-                <input type="text" name="<?php echo "value" . "$i" ?>" id="<?php echo "$row" . "_id" ?>">
-                <br>
-            <?php } else if ($control !== false) {
-                if ($i == 0) { ?>
-                    <input type="numeric" name="<?php echo "value" . "$i" ?>" id="<?php echo "texto" . "_id"  ?>">
-                    <br>
-            <?php }
-
-            ?><br>
-<?php }
-            $i++;
-        } ?>
-    </form>
-<?php }
-
-if ($_SESSION["accion"] == "ver") {
-    $conee = new Conexion("localhost", 3333, "protectora_animales", "root", "");
-
-
-    $generica = new Animal("animal", null, null, null, null, null, null,null,  $conee);
-   $array= $generica->obtieneTodos();
-   ?> <table border="1"> <?php
-   for($i=0;$i<count($array);$i++){
-     ?> <tr> <?php
-    for($r=0;$r<count($array[$i]);$r++){
-            ?> <td> <?php echo $array[$i][$r] ;?></td> <?php
+    public function __construct($conexion)
+    {
+        $this->conexion = $conexion;
     }
-    ?> </tr> <?php
-   }
-   ?> </table> <?php
-}
-if ($_SESSION["accion"] == "añadir") {
-?>
-<form action="animal_controlador.php">
-<?php
-    $i=0;  while ($row = $stmt->fetch(PDO::FETCH_COLUMN)) {
-        $array[$i] = $row;
-    ?>
-    
-    <label ><?php echo "Introduce " . $row; ?></label>
-    
-    <?php
-            $control= strpos($row, 'id');
-      if( $control===false) 
-    { ?>
-                   <input type="text" name="<?php echo "value" . "$i" ?>" id="<?php echo "$row" . "_id" ?>">
-                   <br>
-    <?php } else if($control!==false) {
-            if($i==0){
-                ?>
-                        <input type="numeric" name="<?php echo "value" . "$i" ?>" id="<?php echo "texto" . "_id"  ?>">
-                        <br>
-                <?php
-    
+
+    public function listarAnimales()
+    {
+        $animal = new Animal($this->conexion);
+        $animales = $animal->obtenerTodos();
+        if ($animales) {
+            include("../vista/Animal_vista.php");
+        } else {
+            echo "No se encontraron animales.";
+        }
+    }
+
+    public function crearAnimal()
+    {
+        $a = new Animal($this->conexion);
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $a->nombre = $_POST["nombre"];
+            $a->especie = $_POST["especie"];
+            $a->raza = $_POST["raza"];
+            $a->genero = $_POST["genero"];
+            $a->color = $_POST["color"];
+            $a->edad = $_POST["edad"];
+            if ($a->crear()) {
+                header("Location: http://localhost/Protectora%20de%20animales%20POO/controlador/Animal_Controlador.php?action=listarAnimal");
             }
-    
-             
-             
-                ?><br> 
-        
-       
-    <?php }$i++; }?> 
-    <input type="submit" name="btnaa" id="">
-    </form><?php
+        } else {
+            include("../vista/Animal_vista.php");
+        }
+    }
+
+    public function editarAnimal($id)
+    {
+        $a = new Animal($this->conexion);
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $a->id = $_POST["id"];
+            $a->nombre = $_POST["nombre"];
+            $a->especie = $_POST["especie"];
+            $a->raza = $_POST["raza"];
+            $a->genero = $_POST["genero"];
+            $a->color = $_POST["color"];
+            $a->edad = $_POST["edad"];
+            if ($a->actualizar()) {
+                header("Location: http://localhost/Protectora%20de%20animales%20POO/controlador/Animal_Controlador.php?action=listarAnimal");
+            } else {
+                echo "error";
+            }
+        } else {
+            $animal = $a->obtenerDeID($id);
+            include("../vista/Animal_vista.php");
+        }
+
+
+    }
+
+    public function borrarAnimal($id)
+    {
+        $a = new Animal($this->conexion);
+        if ($a->borrar($id)) {
+            header("Location: http://localhost/Protectora%20de%20animales%20POO/controlador/Animal_Controlador.php?action=listarAnimal");
+        } else {
+            echo "error";
+        }
+    }
+
+}
+
+$conexion = new Conexion("localhost", 3307, "protectora_animales", "root", "");
+$controller = new AnimalController($conexion);
+
+$action = isset($_GET['action']) ? $_GET['action'] : 'listarAnimal';
+
+switch ($action) {
+    case 'listarAnimal':
+        $controller->listarAnimales();
+        break;
+    case 'crearAnimal':
+        $controller->crearAnimal();
+        break;
+    case 'editarAnimal':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller->editarAnimal($id);
+        break;
+    case 'borrarAnimal':
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        $controller->borrarAnimal($id);
+        break;
 }
 ?>
-</body>
-</html>
