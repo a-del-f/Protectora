@@ -33,9 +33,13 @@ class AdopcionController
             $a->fecha = date("Y/m/d", strtotime($_POST["fecha"]));
             $a->razon = $_POST["razon"];
             if ($a->crear()) {
-                header("Location: http://localhost/Protectora%20de%20Animales%20POO/controlador/adopcion_Controlador.php?action=listaradopcion");
+                header("Location: http://localhost/Protectora%20de%20animales%20POO/controlador/adopcion_Controlador.php?action=listaradopcion");
             }
         } else {
+            $an = new Animal($this->conexion);
+            $Animales = $an->obtenerTodos();
+            $u = new Usuario($this->conexion);
+            $Usuarios = $u->obtenerTodos();
             include("../vista/Adopcion_Vista.php");
         }
     }
@@ -78,7 +82,7 @@ class AdopcionController
 
 }
 
-$conexion = new Conexion("localhost", 3307, "protectora_animales", "root", "");
+$conexion = new Conexion("localhost", 3333, "protectora_animales", "root", "");
 $controller = new adopcionController($conexion);
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'listaradopcion';

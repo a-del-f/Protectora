@@ -76,7 +76,7 @@ class AnimalController
 
 }
 
-$conexion = new Conexion("localhost", 3307, "protectora_animales", "root", "");
+$conexion = new Conexion("localhost", 3333, "protectora_animales", "root", "");
 $controller = new AnimalController($conexion);
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'listarAnimal';
@@ -96,5 +96,6 @@ switch ($action) {
         $id = isset($_GET['id']) ? $_GET['id'] : null;
         $controller->borrarAnimal($id);
         break;
+    case 'buscarAnimal':
 }
 ?>

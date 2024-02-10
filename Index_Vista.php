@@ -11,9 +11,9 @@
 
 <body>
     <h1>TABLAS:</h1>
-    <a href="index.php?controlador=Animal&vista=listar">Animales</a>
-    <a href="index.php?controlador=Usuario&vista=listar">Usuarios</a>
-    <a href="index.php?controlador=adopcion&vista=listar">Adopciones</a>
+    <a href="index.php?controlador=Animal">Animales</a>
+    <a href="index.php?controlador=usuario">Usuarios</a>
+    <a href="index.php?controlador=adopcion">Adopciones</a>
 </body>
 
 </html>

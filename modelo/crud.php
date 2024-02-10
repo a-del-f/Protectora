@@ -1,4 +1,6 @@
 <?php
+
+require_once '../core/Conexion.php';
 abstract class Crud extends Conexion
 {
     protected $tabla;
@@ -41,7 +43,11 @@ abstract class Crud extends Conexion
         $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($fila) {
-            $nombreClase = $this->tabla;
+            if ($this->tabla === "usuarios") {
+                $nombreClase = "Usuario";
+            } else {
+                $nombreClase = ucfirst($this->tabla);
+            }
             $objeto = new $nombreClase($this->tabla, $this->conexion);
             foreach ($fila as $columna => $valor) {
                 $objeto->{$columna} = $valor;

@@ -65,13 +65,19 @@
         <h1>Creador Adopciones</h1>
         <form method="post" action="">
             <label for="idAnimal">ID Animal:</label>
-            <input type="text" name="idAnimal" required><br>
+            <select name="idAnimal" required>
+                <?php foreach ($Animales as $ani): ?>
+                    <option value="<?php echo $ani->id; ?>">
+                        <?php echo $ani->id . " : " . $ani->nombre; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br>
 
             <label for="idUsuario">ID Usuario:</label>
             <select name="idUsuario" required>
                 <?php foreach ($Usuarios as $usu): ?>
-                    <option value=" <?php echo $usu->id?>" <?php echo ($animal->idUsuario == $usu->idUsuario) ? 'selected' : ''; ?>>
-                        <?php echo $usu->id . " : " . $usu->nombre ?>
+                    <option value="<?php echo $usu->id; ?>">
+                        <?php echo $usu->id . " : " . $usu->nombre; ?>
                     </option>
                 <?php endforeach; ?>
             </select><br>
@@ -92,10 +98,22 @@
             <input type="hidden" name="id" value="<?php echo $Adopcion->id ?>" required><br>
 
             <label for="idAnimal">ID Animal:</label>
-            <input type="text" name="idAnimal" value="<?php echo $Adopcion->idAnimal ?>" required><br>
+            <select name="idAnimal" required>
+                <?php foreach ($Animales as $ani): ?>
+                    <option value="<?php echo $ani->id; ?>" <?php echo ($ani->id == $Adopcion->idAnimal) ? 'selected' : ''; ?>>
+                        <?php echo $ani->id . " : " . $ani->nombre; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br>
 
             <label for="idUsuario">ID Usuario:</label>
-            <input type="text" name="idUsuario" value="<?php echo $Adopcion->idUsuario ?>" required><br>
+            <select name="idUsuario" required>
+                <?php foreach ($Usuarios as $usu): ?>
+                    <option value="<?php echo $usu->id; ?>" <?php echo ($usu->id == $Adopcion->idUsuario) ? 'selected' : ''; ?>>
+                        <?php echo $usu->id . " : " . $usu->nombre; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br>
 
             <label for="fecha">Fecha:</label>
             <input type="date" name="fecha" value="<?php echo $Adopcion->fecha ?>" required><br>
