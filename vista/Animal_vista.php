@@ -98,7 +98,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'listarAnimal'): ?>
     <a href="../controlador/Animal_Controlador.php?action=crearAnimal">Agregar nuevo animal</a>
 
     <form method="post">
-        <label>Comprueba que animal  </label>
+        <label>Comprueba que animal ha sido adoptado a partir de la id </label>
         <input type="number" name="buscarID">
         <input type="submit" name="buscar">
     </form>
