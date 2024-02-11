@@ -10,10 +10,15 @@
 </head>
 
 <body>
+
+
+
     <h1>TABLAS:</h1>
     <a href="index.php?controlador=Animal">Animales</a>
     <a href="index.php?controlador=usuario">Usuarios</a>
     <a href="index.php?controlador=adopcion">Adopciones</a>
+
+
 </body>
 
 </html>

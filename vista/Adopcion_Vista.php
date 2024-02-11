@@ -17,7 +17,10 @@
 </head>
 
 <body>
-    <?php if (isset($_GET['action']) && $_GET['action'] == 'listaradopcion'): ?>
+    <?php
+
+
+    if (isset($_GET['action']) && $_GET['action'] == 'listaradopcion'): ?>
         <button onclick="goToIndex()">TABLAS</button>
         <h1>Gestion de Adopciones</h1>
         <table border="1">
@@ -58,8 +61,15 @@
                 </tr>
             <?php endforeach; ?>
         </table>
+
+
         <a href="../controlador/Adopcion_Controlador.php?action=crearAdopcion">Agregar nuevo Adopcion</a>
+
+
+
+
     <?php endif; ?>
+
     <?php if (isset($_GET['action']) && $_GET['action'] == 'crearAdopcion'): ?>
         <button onclick="goBack()">VOLVER</button>
         <h1>Creador Adopciones</h1>

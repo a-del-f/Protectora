@@ -2,7 +2,7 @@
 
 include("AnimalSoap.php");
 
-$options = array('uri' => 'http://localhost/aa/SOAP/prueba/');
+$options = array('uri' => 'http://localhost/Protectora de Animales POO/');
 
 $server = new SoapServer(NULL, $options);
 

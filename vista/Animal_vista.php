@@ -19,18 +19,33 @@
 
 <body>
 <?php
-$options=array('uri'=>'http://localhost/Protectora de Animales POO/',
-    'location'=>'http://localhost/Protectora de Animales POO/');
+
+$options=array('uri'=>'http://localhost/Protectora%20de%20Animales%20POO/',
+    'location'=>'http://localhost/Protectora%20de%20Animales%20POO/SOAP.php');
 
 if(isset($_POST["buscar"])  ) {
     try {
         $client = new SoapClient(null, $options);
-        $response = $client->edad($_POST["fecha"]);
-        echo ($response ==true) ?  "Mayor de edad" : "Menor de edad";
-    } catch (SoapFault $e) {
+        $response = $client->check($_POST["buscarID"]);
+
+        switch ($response){
+            case 0:
+                echo "<script> alert('La id introducida no pertenece a ningun animal') </script>";
+                break;
+            case 1:
+                echo "<script> alert('La id introducida pertenece a un animal pero no ha sido adoptado') </script>";
+                break;
+            case 2:
+                echo "<script> alert('La id introducida pertenece a un animal que ha sido adoptado') </script>";
+                break;
+
+
+        }
+
+    }catch (SoapFault $e) {
         echo "ERROR: " . $e->getMessage();
-    }
-}
+    }}
+
 if (isset($_GET['action']) && $_GET['action'] == 'listarAnimal'): ?>
     <button onclick="goToIndex()">TABLAS</button>
     <h1>Gestion de Animales</h1>
@@ -84,7 +99,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'listarAnimal'): ?>
 
     <form method="post">
         <label>Comprueba que animal  </label>
-        <input type="number" name="id">
+        <input type="number" name="buscarID">
         <input type="submit" name="buscar">
     </form>
 <?php endif; ?>
