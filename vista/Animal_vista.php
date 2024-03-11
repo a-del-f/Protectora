@@ -20,8 +20,8 @@
 <body>
 <?php
 
-$options=array('uri'=>'http://localhost/Protectora%20de%20Animales%20POO/',
-    'location'=>'http://localhost/Protectora%20de%20Animales%20POO/SOAP.php');
+$options=array('uri'=>'http://localhost/2EVAL/Ejercicios/AlejandroFresno/Protectora%20de%20Animales%20POO/',
+    'location'=>'http://localhost/2EVAL/Ejercicios/AlejandroFresno/Protectora%20de%20Animales%20POO/SOAP.php');
 
 if(isset($_POST["buscar"])  ) {
     try {

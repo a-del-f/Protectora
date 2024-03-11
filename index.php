@@ -9,7 +9,7 @@ if (!isset($_REQUEST['controlador'])) {
     $filename = $controlador . ".php";
     $queryParameters = isset($_REQUEST['controlador']) ? "?action=" . "listar" . $_REQUEST['controlador'] : '';
 
-    header("Location: http://localhost/Protectora%20de%20animales%20POO/controlador/" . $filename . $queryParameters);
+    header("Location: http://localhost/2EVAL/Ejercicios/AlejandroFresno/Protectora%20de%20Animales%20POO/controlador/" . $filename . $queryParameters);
 }
 
 ?>
